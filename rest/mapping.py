@@ -33,4 +33,8 @@ API_MAPPINGS = {
 		'path': ROOT_URL + '/api/lol/%(region)s/v1.2/champion',
 		'coverage': 'no_pbe',
 	},
+	'champion_static': {
+		'path': (ROOT_URL % {'region': 'global'}) + '/api/lol/static-data/%(region)s/v1.2/champion',
+		'coverage': 'full',
+	},
 }

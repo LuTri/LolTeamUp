@@ -129,3 +129,23 @@ class ChampionStatus(LolObject):
 			'id',
 			'rankedPlayEnabled'
 		)
+
+class ChampionStatic(LolObject):
+	api_func_all = {
+		'func_name': 'champion_static',
+		'param_name': None,
+		'leafs': ['data']
+	}
+
+	class Meta(LolObject.Meta):
+		fields = (
+			'id',
+			'key',
+			'name',
+			('tags', ('champData','tags',),),
+			'title',
+		)
+
+		relations = (
+			('status', ChampionStatus, 'id', False,),
+		)
