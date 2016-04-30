@@ -41,4 +41,12 @@ API_MAPPINGS = {
 		'path': (ROOT_URL % {'region': 'global'}) + '/api/lol/static-data/%(region)s/v1.2/champion',
 		'coverage': 'full',
 	},
+	'summoner_by_name': {
+		'path': ROOT_URL + '/api/lol/%(region)s/v1.4/summoner/by-name/%(summonernames)s',
+		'coverage': 'no_pbe',
+	},
+	'summoner_by_id': {
+		'path': ROOT_URL + '/api/lol/%(region)s/v1.4/summoner/%(summonerids)s',
+		'coverage': 'no_pbe',
+	},
 }

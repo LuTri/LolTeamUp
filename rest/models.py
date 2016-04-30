@@ -175,3 +175,32 @@ class ChampionMastery(LolObject):
 		relations = (
 			('champion', ChampionStatic, 'championId', False,),
 		)
+
+class Summoner(LolObject):
+	api_func = {
+		'func_name': 'summoner_by_id',
+		'param_name': 'summonerids'}
+	api_func_multi = {
+		'func_name': 'summoner_by_id',
+		'param_name': 'summonerids'}
+
+	api_func_verbose = {
+		'func_name': 'summoner_by_name',
+		'param_name': 'summonernames'}
+
+	api_func_verbose_multi = {
+		'func_name': 'summoner_by_name',
+		'param_name': 'summonernames'}
+
+	class Meta(LolObject.Meta):
+		fields = (
+			'profileIconId',
+			'summonerLevel',
+			'revisionDate',
+			'id',
+			'name',
+		)
+
+		relations = (
+			('masteries', 'rest.models.ChampionMastery', 'id', True,),
+		)
