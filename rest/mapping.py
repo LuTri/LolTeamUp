@@ -29,4 +29,8 @@ REGION_PLATFORM = {
 ROOT_URL = "https://%(region)s.api.pvp.net"
 
 API_MAPPINGS = {
+	'champions': {
+		'path': ROOT_URL + '/api/lol/%(region)s/v1.2/champion',
+		'coverage': 'no_pbe',
+	},
 }

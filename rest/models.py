@@ -113,3 +113,19 @@ class LolObject(object):
 	@classmethod
 	def get_all(cls, **kwargs):
 		return cls._bulk_get(cls.api_func_all)
+
+class ChampionStatus(LolObject):
+	api_func_all = {
+		'func_name': 'champions',
+		'param_name': None,
+		'leafs':['champions']}
+
+	class Meta(LolObject.Meta):
+		fields = (
+			'active',
+			'botEnabled',
+			'botMmEnabled',
+			'freeToPlay',
+			'id',
+			'rankedPlayEnabled'
+		)
