@@ -204,3 +204,46 @@ class Summoner(LolObject):
 		relations = (
 			('masteries', 'rest.models.ChampionMastery', 'id', True,),
 		)
+
+class LolObjectPool(object):
+	instance = NotImplemented
+	model = None
+
+	class _Singleton(object):
+		def __init__(self, cls):
+			self.model = cls.model
+			self.index = cls.index
+			self._load()
+
+		def _load(self):
+			self._modelinstances = self.model.get_all()
+
+		def find(self, value):
+			for item in self._modelinstances:
+				if getattr(item, self.index, None) == value:
+					return item
+			raise IndexError("ModelInstance with \"%s\" = \"%s\" not found!" % (
+				attrname,
+				value
+			))
+
+	def __new__(cls, *args, **kwargs):
+		if cls.instance == None:
+			cls.instance = cls._Singleton(cls, *args, **kwargs)
+			setattr(cls.model, 'pooled', cls.instance)
+
+		return cls.instance
+
+class ChampionStatusPool(LolObjectPool):
+	instance = None
+	model = ChampionStatus
+	index = 'id'
+
+class ChampionStaticPool(LolObjectPool):
+	instance = None
+	model = ChampionStatic
+	index = 'id'
+
+
+STATICPOOL = ChampionStaticPool()
+STATUSPOOL = ChampionStatusPool()
