@@ -203,6 +203,23 @@ class Summoner(LolObject):
 
 		relations = (
 			('masteries', 'rest.models.ChampionMastery', 'id', True,),
+			('recent_games', 'rest.models.Game', 'id', True,),
+		)
+
+class Game(LolObject):
+	api_func_multi = {
+		'func_name': 'game_by_player_id',
+		'param_name': 'playerid',
+		'leafs': ['games',]}
+
+	class Meta(LolObject.Meta):
+		fields = (
+			'championId',
+			('stats', ('stats',)),
+		)
+
+		relations = (
+			('champion', ChampionStatic, 'championId', False,),
 		)
 
 class LolObjectPool(object):
