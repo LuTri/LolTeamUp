@@ -149,3 +149,29 @@ class ChampionStatic(LolObject):
 		relations = (
 			('status', ChampionStatus, 'id', False,),
 		)
+
+class ChampionMastery(LolObject):
+	api_func = {
+		'func_name': 'championmastery_by_player',
+		'param_name': 'playerid'}
+
+	api_func_multi = {
+		'func_name': 'championmastery_by_player',
+		'param_name': 'playerid'}
+
+	class Meta(LolObject.Meta):
+		fields = (
+			'championLevel',
+			'chestGranted',
+			'championPoints',
+			'championPointsSinceLastLevel',
+			'highestGrade',
+			'championPointsUntilNextLevel',
+			'lastPlayTime',
+			'championId',
+			'playerId',
+		)
+
+		relations = (
+			('champion', ChampionStatic, 'championId', False,),
+		)
