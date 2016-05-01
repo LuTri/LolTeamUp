@@ -53,10 +53,9 @@ class LolObject(object):
 			if isinstance(field, basestring):
 				setattr(self, field, json.get(field, None))
 			else:
-				data = reduce(lambda x,y : x[y], [json,] + field[1])
-				if len(field) > 2:
-					data = import_func(field[2])(data)
-				setattr(self, field[0], data)
+				data = reduce(lambda x,y : x[y], [json,] + field['leafs'])
+				data = import_func(field['model'])(data) if field['model'] else data
+				setattr(self, field['attr'], data)
 
 	class Meta:
 		fields = ()
@@ -68,7 +67,7 @@ class QueriedLolObject(LolObject):
 		get_params = {}
 		for field in [field for field in cls.Meta.fields\
 				if not isinstance(field, basestring)]:
-			get_params.setdefault(*(field[1]))
+			get_params.update(field['get_params'])
 
 		client = RiotApiClient()
 		query = getattr(client, func_dict['func_name'], None)
@@ -147,7 +146,12 @@ class ChampionStatic(QueriedLolObject):
 			'id',
 			'key',
 			'name',
-			('tags', ['tags']),
+			{
+				'attr': 'tags',
+				'leafs': ['tags'],
+				'model': None,
+				'get_params': {'champData': 'tags'}
+			},
 			'title',
 		)
 
@@ -220,7 +224,12 @@ class Game(QueriedLolObject):
 	class Meta(LolObject.Meta):
 		fields = (
 			'championId',
-			('stats', ['stats'], 'rest.models.GameStats'),
+			{
+				'attr': 'stats',
+				'leafs': ['stats'],
+				'model': 'rest.models.GameStats',
+				'get_params': {}
+			}
 		)
 
 		relations = (
