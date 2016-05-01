@@ -1,18 +1,20 @@
 from rest import RiotApiClient
 
-def import_func(name):
-	components = name.split('.')
-	mod = __import__(components[0])
-	for comp in components[1:]:
-		mod = getattr(mod, comp)
-	return mod
+def import_func(clsname):
+	if isinstance(clsname, basestring):
+		components = clsname.split('.')
+		mod = __import__(components[0])
+		for comp in components[1:]:
+			mod = getattr(mod, comp)
+		return mod
+	else:
+		return clsname
 
 class LolObjectRelationDescriptor(object):
 	def __init__(self, attrname, relation, relation_id_name, is_1tomany):
 		self.attrname = attrname
 		self._value = None
-		self.related_class = relation if not isinstance(relation, basestring)\
-			else import_func(relation)
+		self.related_class = import_func(relation)
 		self.is_1tomany = is_1tomany
 		self.relation_id_name = relation_id_name
 
