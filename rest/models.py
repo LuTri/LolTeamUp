@@ -45,7 +45,7 @@ class LolObject(object):
 				LolObjectRelationDescriptor(*relation))
 		return super(LolObject, cls).__new__(cls, *args, **kwargs)
 
-	def __init__(self, json, recursive=False):
+	def __init__(self, json):
 		self.related_values = {}
 		for field in self.Meta.fields:
 			if isinstance(field, basestring):
