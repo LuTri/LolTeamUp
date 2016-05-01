@@ -62,6 +62,7 @@ class LolObject(object):
 		fields = ()
 		relations = ()
 
+class QueriedLolObject(LolObject):
 	@classmethod
 	def _query(cls, func_dict={}, params=None):
 		get_params = {}
@@ -118,7 +119,7 @@ class LolObject(object):
 	def get_all(cls, **kwargs):
 		return cls._bulk_get(cls.api_func_all)
 
-class ChampionStatus(LolObject):
+class ChampionStatus(QueriedLolObject):
 	api_func_all = {
 		'func_name': 'champions',
 		'param_name': None,
@@ -134,7 +135,7 @@ class ChampionStatus(LolObject):
 			'rankedPlayEnabled'
 		)
 
-class ChampionStatic(LolObject):
+class ChampionStatic(QueriedLolObject):
 	api_func_all = {
 		'func_name': 'champion_static',
 		'param_name': None,
@@ -154,7 +155,7 @@ class ChampionStatic(LolObject):
 			('status', ChampionStatus, 'id', False,),
 		)
 
-class ChampionMastery(LolObject):
+class ChampionMastery(QueriedLolObject):
 	api_func = {
 		'func_name': 'championmastery_by_player',
 		'param_name': 'playerid'}
@@ -180,7 +181,7 @@ class ChampionMastery(LolObject):
 			('champion', ChampionStatic, 'championId', False,),
 		)
 
-class Summoner(LolObject):
+class Summoner(QueriedLolObject):
 	api_func = {
 		'func_name': 'summoner_by_id',
 		'param_name': 'summonerids'}
@@ -210,7 +211,7 @@ class Summoner(LolObject):
 			('recent_games', 'rest.models.Game', 'id', True,),
 		)
 
-class Game(LolObject):
+class Game(QueriedLolObject):
 	api_func_multi = {
 		'func_name': 'game_by_player_id',
 		'param_name': 'playerid',
