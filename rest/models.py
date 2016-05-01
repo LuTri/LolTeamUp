@@ -220,11 +220,53 @@ class Game(QueriedLolObject):
 	class Meta(LolObject.Meta):
 		fields = (
 			'championId',
-			('stats', ['stats'],),
+			('stats', ['stats'], 'rest.models.GameStats'),
 		)
 
 		relations = (
 			('champion', ChampionStatic, 'championId', False,),
+		)
+
+class GameStats(LolObject):
+	class Meta(LolObject.Meta):
+		fields = (
+			'assists',
+			'championsKilled',
+			'goldEarned',
+			'goldSpent',
+			'item0',
+			'item1',
+			'item2',
+			'item3',
+			'item4',
+			'item5',
+			'item6',
+			'killingSprees',
+			'largestKillingSpree',
+			'largestMultiKill',
+			'level',
+			'magicDamageDealtPlayer',
+			'magicDamageDealtToChampions',
+			'magicDamageTaken',
+			'minionsKilled',
+			'numDeaths',
+			'physicalDamageDealtPlayer',
+			'physicalDamageDealtToChampions',
+			'physicalDamageTaken',
+			'playerPosition',
+			'playerRole',
+			'team',
+			'timePlayed',
+			'totalDamageDealt',
+			'totalDamageDealtToChampions',
+			'totalDamageTaken',
+			'totalHeal',
+			'totalTimeCrowdControlDealt',
+			'totalUnitsHealed',
+			'trueDamageDealtPlayer',
+			'trueDamageDealtToChampions',
+			'trueDamageTaken',
+			'win',
 		)
 
 class LolObjectPool(object):
