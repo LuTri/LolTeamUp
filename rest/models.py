@@ -53,8 +53,10 @@ class LolObject(object):
 			if isinstance(field, basestring):
 				setattr(self, field, json.get(field, None))
 			else:
-				setattr(self, field[0], json.get(field[0], None))
-
+				data = reduce(lambda x,y : x[y], [json,] + field[1])
+				if len(field) > 2:
+					data = import_func(field[2])(data)
+				setattr(self, field[0], data)
 
 	class Meta:
 		fields = ()
@@ -144,7 +146,7 @@ class ChampionStatic(LolObject):
 			'id',
 			'key',
 			'name',
-			('tags', ('champData','tags',),),
+			('tags', ['tags']),
 			'title',
 		)
 
@@ -217,7 +219,7 @@ class Game(LolObject):
 	class Meta(LolObject.Meta):
 		fields = (
 			'championId',
-			('stats', ('stats',)),
+			('stats', ['stats'],),
 		)
 
 		relations = (
