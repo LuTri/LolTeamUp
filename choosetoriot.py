@@ -2,6 +2,8 @@ from rest.models import ChampionMastery
 from rest.models import Summoner
 from rest.models import ChampionStatic
 
+from rest.models import STATICPOOL
+
 class ChooseToRiot(object):
 	def __init__(self, summoners):
 		self.summoners = summoners 

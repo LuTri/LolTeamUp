@@ -11,7 +11,6 @@ def run(*args, **kwargs):
 
 	options, args = parser.parse_args()
 	ctr_client = ChooseToRiot(
-		region=options.region or settings.DEFAULT_REGION,
 		summoners=args)
 	ctr_client.run()
 
