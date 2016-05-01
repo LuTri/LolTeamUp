@@ -308,6 +308,20 @@ class ChampionStaticPool(LolObjectPool):
 	model = ChampionStatic
 	index = 'id'
 
+	class _Singleton(LolObjectPool._Singleton):
+		def get_distinct_tags(self):
+			result = set()
+			for champ in self._modelinstances:
+				for tag in champ.tags:
+					result.add(tag)
+			return result
+
+		def get_by_tag(self, tag):
+			result = []
+			for champ in self._modelinstances:
+				if tag in champ.tags:
+					result.append(champ)
+			return result
 
 STATICPOOL = ChampionStaticPool()
 STATUSPOOL = ChampionStatusPool()
