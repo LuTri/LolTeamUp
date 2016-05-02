@@ -215,6 +215,26 @@ class Summoner(QueriedLolObject):
 			('recent_games', 'rest.models.Game', 'id', True,),
 		)
 
+	def get_next_level_5(self):
+		try:
+			return [entry for entry in\
+					sorted(
+						self.masteries,
+						key=lambda x: x.championPoints,
+						reverse=True)
+					if entry.championLevel < 5
+				][0].champion
+		except IndexError:
+			return None
+
+	def get_top_played_tags(self):
+		result = {}
+		for game in self.recent_games:
+			for tag in game.champion.tags:
+				result[tag] = result.setdefault(tag, 0) + 1
+
+		return sorted([tag for tag in result.keys()], key=lambda x: result[x], reverse=True)
+
 class Game(QueriedLolObject):
 	api_func_multi = {
 		'func_name': 'game_by_player_id',
@@ -325,12 +345,15 @@ class ChampionStaticPool(LolObjectPool):
 					result.add(tag)
 			return result
 
-		def get_by_tag(self, tag):
-			result = []
-			for champ in self._modelinstances:
-				if tag in champ.tags:
-					result.append(champ)
-			return result
+		def get_by_tag(self, tag, valid=None):
+			return [champ for champ in self._modelinstances\
+				if tag in champ.tags\
+				and (champ in valid if valid else True)]
+
+		def get_not_in_masteries(self, masteries, valid=None):
+			return [champ for champ in self._modelinstances\
+				if champ not in [m.champion for m in masteries]\
+				and (champ in valid if valid else True)]
 
 STATICPOOL = ChampionStaticPool()
 STATUSPOOL = ChampionStatusPool()
