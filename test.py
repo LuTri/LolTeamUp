@@ -1,4 +1,4 @@
 from choosetoriot import ChooseToRiot
 
-ctr = ChooseToRiot(summoners=['WarLib', 'MoodyMustache', 'Irenaea', 'H28Q Apex'])
+ctr = ChooseToRiot(summoner_names=['WarLib', 'MoodyMustache', 'Irenaea', 'H28Q Apex'])
 ctr.run()

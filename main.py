@@ -10,8 +10,10 @@ def run(*args, **kwargs):
 	parser.add_option("-r", "--region", dest="region")
 
 	options, args = parser.parse_args()
+	if len(args) < 1:
+		raise RuntimeError("You must at least provide 1 Summoner-Name")
 	ctr_client = ChooseToRiot(
-		summoners=args)
+		summoner_names=args)
 	ctr_client.run()
 
 if __name__ == '__main__':
