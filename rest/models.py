@@ -204,6 +204,11 @@ class Summoner(QueriedLolObject):
 			('recent_games', 'rest.models.Game', 'id', True,),
 		)
 
+	def __init__(self, *args, **kwargs):
+		self._toptags = None
+		self._masteredtags = None
+		super(Summoner, self).__init__(*args, **kwargs)
+
 	def get_next_level_5(self):
 		try:
 			return [entry for entry in\
@@ -216,13 +221,50 @@ class Summoner(QueriedLolObject):
 		except IndexError:
 			return None
 
-	def get_top_played_tags(self):
-		result = {}
-		for game in self.recent_games:
-			for tag in game.champion.tags:
-				result[tag] = result.setdefault(tag, 0) + 1
+	def _get_top_tags(self, champions):
+			result = {}
+			for champ in champions:
+				for tag in champ.tags:
+					result[tag] = result.setdefault(tag, 0) + 1
 
-		return sorted([tag for tag in result.keys()], key=lambda x: result[x], reverse=True)
+			return sorted(
+				[tag for tag in result.keys()],
+				key=lambda x: result[x],
+				reverse=True)
+
+	def get_top_played_tags(self):
+		if self._toptags == None:
+			self._toptags = self._get_top_tags([g.champion for g in self.recent_games])
+		return self._toptags
+
+	def get_most_mastered_tags(self):
+		if self._masteredtags == None:
+			self._masteredtags = self._get_top_tags([m.champion for m in self.masteries])
+		return self._masteredtags
+
+	def get_n_suggested_by_tag(self, tag, n):
+		from datetime import datetime
+		import time
+		import random
+
+		random.seed(int(time.mktime(datetime.now().timetuple())))
+		result = []
+		by_tag = STATICPOOL.get_by_tag(tag)
+		valid = STATICPOOL.get_not_in_masteries(self.masteries, valid=by_tag)
+		if len(valid) < 2:
+			valid = by_tag
+		for i in range(0,n):
+			result.append(valid.pop(random.randint(0,len(valid)-1)))
+		return result
+
+	def get_2_suggested_by_top_tag(self):
+		tag = self.get_top_played_tags()[0]
+		return tag, self.get_n_suggested_by_tag(tag, 2)
+
+	def get_2_suggested_by_not_top_tag(self):
+		tag = self.get_top_played_tags()[-1]
+		return tag, self.get_n_suggested_by_tag(tag, 2)
+
 
 class Game(QueriedLolObject):
 	api_func_multi = {
