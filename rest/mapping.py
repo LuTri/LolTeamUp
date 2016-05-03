@@ -45,10 +45,6 @@ API_MAPPINGS = {
 		'path': ROOT_URL + '/api/lol/%(region)s/v1.4/summoner/by-name/%(summonernames)s',
 		'coverage': 'no_pbe',
 	},
-	'summoner_by_id': {
-		'path': ROOT_URL + '/api/lol/%(region)s/v1.4/summoner/%(summonerids)s',
-		'coverage': 'no_pbe',
-	},
 	'game_by_player_id': {
 		'path': ROOT_URL + '/api/lol/%(region)s/v1.3/game/by-summoner/%(playerid)s/recent',
 		'coverage': 'no_pbe'

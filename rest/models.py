@@ -186,18 +186,7 @@ class ChampionMastery(QueriedLolObject):
 		)
 
 class Summoner(QueriedLolObject):
-	api_func = {
-		'func_name': 'summoner_by_id',
-		'param_name': 'summonerids'}
 	api_func_multi = {
-		'func_name': 'summoner_by_id',
-		'param_name': 'summonerids'}
-
-	api_func_verbose = {
-		'func_name': 'summoner_by_name',
-		'param_name': 'summonernames'}
-
-	api_func_verbose_multi = {
 		'func_name': 'summoner_by_name',
 		'param_name': 'summonernames'}
 
