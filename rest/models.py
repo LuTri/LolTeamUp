@@ -386,5 +386,10 @@ class ChampionStaticPool(LolObjectPool):
 				if champ not in [m.champion for m in masteries]\
 				and (champ in valid if valid else True)]
 
+		def get_in_masteries(self, masteries, valid=None):
+			return [champ for champ in self._modelinstances\
+				if champ in [m.champion for m in masteries]\
+				and (champ in valid if valid else True)]
+
 STATICPOOL = ChampionStaticPool()
 STATUSPOOL = ChampionStatusPool()
