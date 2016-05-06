@@ -205,8 +205,8 @@ class Summoner(QueriedLolObject):
 		)
 
 	def __init__(self, *args, **kwargs):
-		self._toptags = None
 		self._masteredtags = None
+		self._accumulatdtags = None
 		super(Summoner, self).__init__(*args, **kwargs)
 
 	def get_next_level_5(self):
@@ -232,14 +232,21 @@ class Summoner(QueriedLolObject):
 				key=lambda x: result[x],
 				reverse=True)
 
-	def get_top_played_tags(self):
-		if self._toptags == None:
-			self._toptags = self._get_top_tags([g.champion for g in self.recent_games])
-		return self._toptags
+	def get_accumulated_tag_points(self):
+		if self._accumulatdtags == None:
+			self._accumulatdtags = dict([(tag, 0) for tag in\
+				STATICPOOL.get_distinct_tags()])
+			for m in self.masteries:
+				for tag in m.champion.tags:
+					self._accumulatdtags[tag] = self._accumulatdtags[tag]\
+						+ m.championPoints
+
+		return self._accumulatdtags
 
 	def get_most_mastered_tags(self):
 		if self._masteredtags == None:
-			self._masteredtags = self._get_top_tags([m.champion for m in self.masteries])
+			self._masteredtags = self._get_top_tags(
+				[m.champion for m in self.masteries])
 		return self._masteredtags
 
 	def get_n_suggested_by_tag(self, tag, n):
@@ -249,21 +256,27 @@ class Summoner(QueriedLolObject):
 
 		random.seed(int(time.mktime(datetime.now().timetuple())))
 		result = []
-		by_tag = STATICPOOL.get_by_tag(tag)
-		valid = STATICPOOL.get_not_in_masteries(self.masteries, valid=by_tag)
-		if len(valid) < 2:
-			valid = by_tag
+		valid = STATICPOOL.get_by_tag(tag)
+#		valid = STATICPOOL.get_in_masteries(self.masteries, valid=by_tag)
 		for i in range(0,n):
 			result.append(valid.pop(random.randint(0,len(valid)-1)))
 		return result
 
 	def get_2_suggested_by_top_tag(self):
-		tag = self.get_top_played_tags()[0]
+		tag = self.get_most_mastered_tags()[0]
+		print tag
 		return tag, self.get_n_suggested_by_tag(tag, 2)
 
 	def get_2_suggested_by_not_top_tag(self):
-		tag = self.get_top_played_tags()[-1]
+		tag = self.get_most_mastered_tags()[-1]
+		print tag
 		return tag, self.get_n_suggested_by_tag(tag, 2)
+
+	def get_2_suggested_by_mastered_tag(self):
+		pass
+
+	def get_2_suggested_by_not_mastered_tag(self):
+		pass
 
 
 class Game(QueriedLolObject):
@@ -369,12 +382,17 @@ class ChampionStaticPool(LolObjectPool):
 	index = 'id'
 
 	class _Singleton(LolObjectPool._Singleton):
+		def __init__(self, *args, **kwargs):
+			self._distincttags = None
+			super(ChampionStaticPool._Singleton, self).__init__(*args, **kwargs)
+
 		def get_distinct_tags(self):
-			result = set()
-			for champ in self._modelinstances:
-				for tag in champ.tags:
-					result.add(tag)
-			return result
+			if self._distincttags == None:
+				self._distincttags = set()
+				for champ in self._modelinstances:
+					for tag in champ.tags:
+						self._distincttags.add(tag)
+			return self._distincttags
 
 		def get_by_tag(self, tag, valid=None):
 			return [champ for champ in self._modelinstances\

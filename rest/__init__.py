@@ -92,8 +92,9 @@ class RiotApiClient(object):
 				response.text
 			)
 		else:
-			raise RuntimeError("API returned %d!\nresponse: %s\nurl: %s" % (
+			raise RuntimeError("API returned %d!\nresponse: %s\nurl: %s\nHeaders: %s" % (
 				response.status_code,
 				response.text,
-				response.url
+				response.url,
+				response.headers
 			))

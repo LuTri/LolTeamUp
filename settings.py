@@ -6,7 +6,7 @@ TEAM_CONFIGS = [
 		'configname': 'STANDARD',
 		'tags': [
 			'Tank',
-			'Fighter'
+			'Fighter',
 			'Mage',
 			'Support',
 			'Marksman',
