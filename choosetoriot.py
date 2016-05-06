@@ -8,13 +8,11 @@ from settings import TEAM_CONFIGS
 import messages
 
 class ChooseToRiot(object):
-	def __init__(self, summoner_names):
+	def __init__(self, summoner_names, training=False):
 		self.summoner_names = summoner_names
 		self.summoners = None
-		self.teamed = {
-			'winmode': {},
-			'trainingmode': {}
-		}
+		self._create_teams = len(summoner_names) > 1
+		self.training = training
 
 	def _request_summoners(self):
 		self.summoners = Summoner.bulk_get(self.summoner_names)
@@ -52,17 +50,14 @@ class ChooseToRiot(object):
 
 		return tag_played_by
 
-	def _train_tags(self):
-		result = self._tag_summoners(False)
-		print result
+	def team_up(self):
+		tag_played_by = self._tag_summoners(not self.training)
 
-	def _win_tags(self):
-		result = self._tag_summoners(True)
-
-	def _team_up(self):
-		for config in TEAM_CONFIGS:
-			self.teamed[config['configname']] = ''
-			#TODO: concept on how to team up!!
+		for teamname in tag_played_by:
+			print "In %s, the suggested roles would be:" % teamname
+			for tag in tag_played_by[teamname]:
+				print "%20s: %20s" % (tag, tag_played_by[teamname][tag].name)
+		
 # 1. T-Config by highest accumulated-point tag in masteries
 # 2. T-Config by lowest accumulated-point tag in masteries
 
@@ -71,7 +66,7 @@ class ChooseToRiot(object):
 		toptag, two_top_tags = summoner.get_2_suggested_by_top_tag()
 		leasttag, two_not_top_tags = summoner.get_2_suggested_by_not_top_tag()
 		topaccutag, two_most_accu_tags = summoner.get_2_suggested_by_mastered_tag()
-		leastaccutag, tow_least_accu_tags = summoner.get_2_suggested_by_not_mastered_tag()
+		leastaccutag, two_least_accu_tags = summoner.get_2_suggested_by_not_mastered_tag()
 
 		print "####### %s, your suggested champs are:" % summoner.name
 		print messages.RANDOM_TOP_TAGS % toptag
@@ -82,7 +77,18 @@ class ChooseToRiot(object):
 		for champ in two_not_top_tags:
 			print "\t%s" % champ.name
 
+		print messages.RANDOM_TOP_MASTERED % topaccutag
+		for champ in two_most_accu_tags:
+			print "\t%s" % champ.name
+
+		print messages.RANDOM_LEAST_MASTERED % leastaccutag
+		for champ in two_least_accu_tags:
+			print "\t%s" % champ.name
+
 	def run(self):
 		self._request_summoners()
 		for summoner in self.summoners:
 			self._make_suggestions(summoner)
+
+		if self._create_teams:
+			self.team_up()

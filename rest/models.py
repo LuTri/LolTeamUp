@@ -1,4 +1,9 @@
 from rest import RiotApiClient
+from datetime import datetime
+import time
+import random
+
+random.seed(int(time.mktime(datetime.now().timetuple())))
 
 def import_func(clsname):
 	if isinstance(clsname, basestring):
@@ -207,6 +212,7 @@ class Summoner(QueriedLolObject):
 	def __init__(self, *args, **kwargs):
 		self._masteredtags = None
 		self._accumulatdtags = None
+		self._orderedaccumulatedtags = None
 		super(Summoner, self).__init__(*args, **kwargs)
 
 	def get_next_level_5(self):
@@ -243,41 +249,49 @@ class Summoner(QueriedLolObject):
 
 		return self._accumulatdtags
 
+	def get_tags_ordered_by_accumulated_points(self):
+		if self._orderedaccumulatedtags == None:
+			tags = self.get_accumulated_tag_points()
+			self._orderedaccumulatedtags = sorted(
+				tags.keys(),
+				key=lambda x: tags[x],
+				reverse=True)
+		return self._orderedaccumulatedtags
+
 	def get_most_mastered_tags(self):
 		if self._masteredtags == None:
 			self._masteredtags = self._get_top_tags(
 				[m.champion for m in self.masteries])
 		return self._masteredtags
 
-	def get_n_suggested_by_tag(self, tag, n):
-		from datetime import datetime
-		import time
-		import random
-
-		random.seed(int(time.mktime(datetime.now().timetuple())))
+	def get_n_suggested_by_tag(self, tag, n, inmasteries=None):
 		result = []
-		valid = STATICPOOL.get_by_tag(tag)
-#		valid = STATICPOOL.get_in_masteries(self.masteries, valid=by_tag)
-		for i in range(0,n):
+		if inmasteries == True:
+			valid = STATICPOOL.get_by_tag(tag, valid=STATICPOOL.get_in_masteries(self.masteries))
+		elif inmasteries == False:
+			valid = STATICPOOL.get_by_tag(tag, valid=STATICPOOL.get_not_in_masteries(self.masteries))
+		elif inmasteries == None:
+			valid = STATICPOOL.get_by_tag(tag)
+
+		for i in range(0,n if len(valid) > n else len(valid)):
 			result.append(valid.pop(random.randint(0,len(valid)-1)))
 		return result
 
 	def get_2_suggested_by_top_tag(self):
 		tag = self.get_most_mastered_tags()[0]
-		print tag
-		return tag, self.get_n_suggested_by_tag(tag, 2)
+		return tag, self.get_n_suggested_by_tag(tag, 2, True)
 
 	def get_2_suggested_by_not_top_tag(self):
 		tag = self.get_most_mastered_tags()[-1]
-		print tag
-		return tag, self.get_n_suggested_by_tag(tag, 2)
+		return tag, self.get_n_suggested_by_tag(tag, 2, True)
 
 	def get_2_suggested_by_mastered_tag(self):
-		pass
+		tag = self.get_tags_ordered_by_accumulated_points()[0]
+		return tag, self.get_n_suggested_by_tag(tag, 2, True)
 
 	def get_2_suggested_by_not_mastered_tag(self):
-		pass
-
+		tag = self.get_tags_ordered_by_accumulated_points()[-1]
+		return tag, self.get_n_suggested_by_tag(tag, 2, True)
 
 class Game(QueriedLolObject):
 	api_func_multi = {
