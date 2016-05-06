@@ -1,0 +1,14 @@
+API_KEY = "YOURAPIKEY"
+
+TEAM_CONFIGS = TEAM_CONFIGS + [
+	{
+		'configname': 'TROLLOL',
+		'tags': [
+			'Support',
+			'Support',
+			'Support',
+			'Support',
+			'Support',
+		]
+	}
+]
